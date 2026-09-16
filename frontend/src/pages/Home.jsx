@@ -1,42 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://shopnest-backend-5iyz.onrender.com';
+
+  const dummyProducts = [
+    { _id: '1', name: 'Wireless Noise-Cancelling Headphones', price: 299.99, image: 'headphones' },
+    { _id: '2', name: 'Minimalist Modern Chair', price: 150.00, image: 'chair' },
+    { _id: '3', name: 'Professional DSLR Camera', price: 1199.99, image: 'camera' },
+    { _id: '4', name: 'Classic White Sneakers', price: 85.00, image: 'sneakers' }
+  ];
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(`${backendUrl}/api/products`);
-        const data = await res.json();
-        setProducts(data.slice(0, 4)); // Featured products
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
+    axios.get('https://shopnest-backend-5iyz.onrender.com/api/products')
+      .then((res) => {
+        if (res.data && res.data.length > 0) {
+          setProducts(res.data);
+        } else {
+          setProducts(dummyProducts);
+        }
+      })
+      .catch(() => {
+        setProducts(dummyProducts);
+      });
   }, []);
 
   return (
     <div className="home-container">
-      <div className="hero-banner">
-        <h1>Welcome to ShopNest</h1>
-        <p>Discover the best products at unbeatable prices.</p>
-      </div>
       <h2>Featured Products</h2>
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="product-grid">
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
-      )}
+      <div className="product-list">
+        {products.map((product) => (
+          <ProductCard key={product._id} product={product} />
+        ))}
+      </div>
     </div>
   );
 };
