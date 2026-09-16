@@ -4,11 +4,12 @@ import ProductCard from '../components/ProductCard';
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://shopnest-backend-5iyz.onrender.com';
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('/api/products');
+        const res = await fetch(`${backendUrl}/api/products`);
         const data = await res.json();
         setProducts(data.slice(0, 4)); // Featured products
       } catch (error) {
